@@ -1,6 +1,6 @@
 import { ForkTsCheckerWebpackPluginState } from '../ForkTsCheckerWebpackPluginState';
 import chokidar, { FSWatcher } from 'chokidar';
-import { lstatSync } from 'fs';
+import { existsSync, lstatSync } from 'fs';
 import { extname } from 'path';
 import { Watcher, WatchFileSystem, WatchFileSystemOptions } from './WatchFileSystem';
 import { Compiler } from 'webpack';
@@ -10,7 +10,7 @@ const IGNORED_DIRS = ['node_modules', '.git', '.yarn', '.pnp'];
 
 function isIgnored(path: string) {
   return (
-    (lstatSync(path).isFile() && !/\.tsx?$/.test(path)) ||
+    (existsSync(path) && lstatSync(path).isFile() && !/\.tsx?$/.test(path)) ||
     IGNORED_DIRS.some((ignoredDir) => path.includes(`/${ignoredDir}/`))
   );
 }
