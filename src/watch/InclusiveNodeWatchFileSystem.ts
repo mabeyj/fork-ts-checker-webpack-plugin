@@ -1,5 +1,6 @@
 import { ForkTsCheckerWebpackPluginState } from '../ForkTsCheckerWebpackPluginState';
 import chokidar, { FSWatcher } from 'chokidar';
+import { lstatSync } from 'fs';
 import { extname } from 'path';
 import { Watcher, WatchFileSystem, WatchFileSystemOptions } from './WatchFileSystem';
 import { Compiler } from 'webpack';
@@ -8,7 +9,10 @@ import { clearFilesChange, updateFilesChange } from '../reporter';
 const IGNORED_DIRS = ['node_modules', '.git', '.yarn', '.pnp'];
 
 function isIgnored(path: string) {
-  return IGNORED_DIRS.some((ignoredDir) => path.includes(`/${ignoredDir}/`));
+  return (
+    (lstatSync(path).isFile() && !/\.tsx?$/.test(path)) ||
+    IGNORED_DIRS.some((ignoredDir) => path.includes(`/${ignoredDir}/`))
+  );
 }
 
 class InclusiveNodeWatchFileSystem implements WatchFileSystem {
